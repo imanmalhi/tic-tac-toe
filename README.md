@@ -1,73 +1,42 @@
-# React + TypeScript + Vite
+# Tic-Tac-Toe
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A tic-tac-toe game built with React and TypeScript featuring an AI opponent powered by Claude. Demonstrates effective AI-assisted development with clean architecture, comprehensive testing, and automated AWS deployement.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Quick Start
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open http://localhost:5173
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Tests
+```bash
+npm run test:run
 ```
+
+## Production
+
+Live at https://un4dfr2wv3.us-east-1.awsapprunner.com
+
+## Architecture
+
+The application uses scrict separation between game logic and UI. Core game rules are pure functions in src/logic, completely decoupled from React, makeing them easy to unit test. State management uses a custom hook that encapsulates all transitions. The AI opponent is isolated in src/api, calling the Anthropic API for moves with explanations. If the API fails, it falls back gracefully.
+
+## CI/CD Pipeline
+
+Fully automated using AWS:
+- CodePipeline triggers on push to main
+- Code Build runs tests and builds Docker image
+- ECR stores container images
+- App Runner auto-deploys new images
+
+Push to production in about 3 minutes with no manual steps.
+
+## AI Tools Used
+
+Claude Code assisted with implementation based on my specifications. I wrote all type definitions, function signatures, component interfaces, and architectural decisions. Claude Code implemented bodies and generated CSS following detailed prompts. This kept me in control of the design while accelerating implementation.
+
+## What I would Improve
+
+With more time: integration tests for React components, AI difficulty levels, game statistics with localStorage, staging environment with approval gate, blue-green deployments.
