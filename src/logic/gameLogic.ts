@@ -1,4 +1,4 @@
-import { Board, Player, GameState } from '../types/game';
+import type { Board, Player, GameState } from '../types/game';
 
 export const WINNING_LINES: number[][] = [
     [0, 1, 2],

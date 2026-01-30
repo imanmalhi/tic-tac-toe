@@ -1,0 +1,50 @@
+.cell {
+    width: 100px;
+    height: 100px;
+    font-size: 48px;
+    font-weight: bold;
+    border: 2px solid gray;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.cell:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+
+.x {
+    color: blue;
+}
+
+.o {
+    color: red;
+}
+
+.winning {
+    background: yellow;
+    border-color: orange;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}

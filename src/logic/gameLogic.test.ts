@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { checkWinner, checkDraw, getInitialGameState, makeMove } from './gameLogic';
-import { Board } from '../types/game';
+import type { Board } from '../types/game';
 
 describe('checkWinner', () => {
     it('returns null for empty board', () => {

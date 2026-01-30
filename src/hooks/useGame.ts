@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GameState, GameMode } from '../types/game';
+import type { GameState, GameMode } from '../types/game';
 import { getInitialGameState, makeMove } from '../logic/gameLogic';
 import { getAIMove } from '../api/aiOpponent';
 

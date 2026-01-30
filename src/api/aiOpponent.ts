@@ -1,4 +1,4 @@
-import { Board, AIMove } from '../types/game';
+import type { Board, AIMove } from '../types/game';
 
 function formatBoard(board: Board): string {
     return [
