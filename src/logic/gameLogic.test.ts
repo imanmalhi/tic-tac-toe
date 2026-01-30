@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { checkWinner, checkDraw, getInitialGameState, makeMove } from './gameLogic';
+import { Board } from '../types/game';
 
 describe('checkWinner', () => {
     it('returns null for empty board', () => {
@@ -10,14 +11,14 @@ describe('checkWinner', () => {
     });
 
     it('detects horizontal win', () => {
-        const board = ['X', 'X', 'X', null, null, null, null, null, null];
+        const board: Board = ['X', 'X', 'X', null, null, null, null, null, null];
         const result = checkWinner(board);
         expect(result.winner).toBe('X');
         expect(result.line).toEqual([0, 1, 2]);
     });
 
     it('detects diagonal win', () => {
-        const board = ['O', null, null, null, 'O', null, null, null, 'O'];
+        const board: Board = ['O', null, null, null, 'O', null, null, null, 'O'];
         const result = checkWinner(board);
         expect(result.winner).toBe('O');
         expect(result.line).toEqual([0, 4, 8]);
@@ -43,7 +44,7 @@ describe('checkDraw', () => {
     });
 
     it('returns true for full board', () => {
-        const board = ['X', 'O', 'X', 'X', 'O', 'O', 'O', 'X', 'X'];
+        const board: Board = ['X', 'O', 'X', 'X', 'O', 'O', 'O', 'X', 'X'];
         expect(checkDraw(board)).toBe(true);
     });
 });
