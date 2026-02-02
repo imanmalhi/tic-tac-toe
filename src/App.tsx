@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useGame } from './hooks/useGame';
+import { Board } from './components/Board';
+import { GameStatus } from './components/GameStatus';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+export function App(): React.ReactElement {
+    const {
+        gameState,
+        gameMode,
+        aiThinking,
+        aiExplanation,
+        handleMove,
+        resetGame,
+        toggleGameMode,
+    } = useGame();
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const isBoardDisabled = aiThinking || gameState.isGameOver;
+
+    return (
+        <div className="app">
+            <h1 className="title">Tic Tac Toe</h1>
+            <p className="subtitle">
+                {gameMode === 'pvp' ? 'Player vs Player' : 'Player vs AI'}
+            </p>
+
+            <Board
+                board={gameState.board}
+                onCellClick={handleMove}
+                winningLine={gameState.winningLine}
+                disabled={isBoardDisabled}
+            />
+
+            <GameStatus
+                gameState={gameState}
+                gameMode={gameMode}
+                aiThinking={aiThinking}
+                aiExplanation={aiExplanation}
+                onReset={resetGame}
+                onToggleMode={toggleGameMode}
+            />
+        </div>
+    );
 }
 
-export default App
+export default App;
