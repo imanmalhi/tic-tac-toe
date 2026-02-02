@@ -13,7 +13,15 @@ function findFallbackMove(board: Board): AIMove {
     return { index, explanation: 'Fallback move due to API error' };
 }
 
-const SYSTEM_PROMPT = `You are playing tic-tac-toe as O. Respond with JSON only: {"index": <0-8>, "explanation": "<one sentence>"}`;
+function extractJSON(text: string): AIMove {
+    const jsonMatch = text.match(/\{[\s\S]*?"index"[\s\S]*?"explanation"[\s\S]*?\}/);
+    if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+    }
+    throw new Error('No valid JSON found in response');
+}
+
+const SYSTEM_PROMPT = `You are playing tic-tac-toe as O. Respond with ONLY valid JSON, no other text: {"index": <0-8>, "explanation": "<brief reason>"}`;
 
 export async function getAIMove(board: Board): Promise<AIMove> {
     const boardDisplay = formatBoard(board);
@@ -39,7 +47,7 @@ export async function getAIMove(board: Board): Promise<AIMove> {
 
         const data = await response.json();
         const content = data.content[0].text;
-        const move: AIMove = JSON.parse(content);
+        const move = extractJSON(content);
 
         return move;
     } catch (error) {
