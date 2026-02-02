@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { GameState, GameMode } from "../types/game";
 import { getInitialState, makeMove } from "../logic/gameLogic";
 import { getAIMove } from "../api/aiOpponent";
@@ -8,6 +8,7 @@ export function useGame() {
     const [gameMode, setGameMode] = useState<GameMode>('pvp');
     const [aiThinking, setAiThinking] = useState(false);
     const [aiExplanation, setAiExplanation] = useState('');
+    const aiMoveInProgress = useRef(false);
 
     const handleMove = useCallback((index: number): void => {
         setGameState((prev) => makeMove(prev, index));
@@ -16,21 +17,24 @@ export function useGame() {
     const resetGame = useCallback((): void => {
         setGameState(getInitialState());
         setAiExplanation('');
+        aiMoveInProgress.current = false;
     }, []);
 
     const toggleGameMode = useCallback((): void => {
         setGameMode((prev) => (prev === 'pvp' ? 'ai' : 'pvp'));
         setGameState(getInitialState());
         setAiExplanation('');
+        aiMoveInProgress.current = false;
     }, []);
 
     useEffect(() => {
-        if (
+        const isAITurn =
             gameMode === 'ai' &&
             gameState.currentPlayer === 'O' &&
-            !gameState.isGameOver &&
-            !aiThinking
-        ) {
+            !gameState.isGameOver;
+
+        if (isAITurn && !aiMoveInProgress.current) {
+            aiMoveInProgress.current = true;
             setAiThinking(true);
 
             getAIMove(gameState.board)
@@ -44,9 +48,10 @@ export function useGame() {
                 })
                 .finally(() => {
                     setAiThinking(false);
+                    aiMoveInProgress.current = false;
                 });
         }
-    }, [gameMode, gameState.currentPlayer, gameState.isGameOver, gameState.board, aiThinking]);
+    }, [gameMode, gameState.currentPlayer, gameState.isGameOver, gameState.board]);
 
     return {
         gameState,
