@@ -3,6 +3,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+ARG VITE_ANTHROPIC_API_KEY
+ENV VITE_ANTHROPIC_API_KEY=$VITE_ANTHROPIC_API_KEY
 RUN npm run build
 
 FROM public.ecr.aws/docker/library/nginx:alpine
