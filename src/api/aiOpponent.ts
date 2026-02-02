@@ -1,11 +1,20 @@
 import type { Board, AIMove } from "../types/game";
 
 function formatBoard(board: Board): string {
-    return [
+    const rows = [
         board.slice(0, 3),
         board.slice(3, 6),
         board.slice(6, 9)
-    ].map((row, i) => row.map((cell, j) => cell ?? (i * 3 + j)).join(' | ')).join('\n--------\n');
+    ];
+    return rows.map((row, i) => 
+        row.map((cell, j) => cell ?? (i * 3 + j)).join(' | ')
+    ).join('\n-----------\n');
+}
+
+function getAvailableMoves(board: Board): number[] {
+    return board
+        .map((cell, index) => (cell === null ? index : -1))
+        .filter((index) => index !== -1);
 }
 
 function findFallbackMove(board: Board): AIMove {
@@ -25,10 +34,11 @@ function isValidMove(board: Board, index: number): boolean {
     return index >= 0 && index <= 8 && board[index] === null;
 }
 
-const SYSTEM_PROMPT = `You are playing tic-tac-toe as O. The board shows numbers 0-8 for empty cells. Pick an EMPTY cell (shown as a number). Respond with ONLY valid JSON: {"index": <0-8>, "explanation": "<brief reason>"}`;
+const SYSTEM_PROMPT = `You are an expert tic-tac-toe player playing as O. You must respond with ONLY a JSON object, nothing else: {"index": NUMBER, "explanation": "brief reason"}`;
 
 export async function getAIMove(board: Board): Promise<AIMove> {
     const boardDisplay = formatBoard(board);
+    const available = getAvailableMoves(board);
 
     try {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -44,7 +54,10 @@ export async function getAIMove(board: Board): Promise<AIMove> {
                 max_tokens: 100,
                 system: SYSTEM_PROMPT,
                 messages: [
-                    { role: 'user', content: `Current board:\n${boardDisplay}\n\nYour move as O (pick an empty cell shown as a number):` }
+                    { 
+                        role: 'user', 
+                        content: `Board (0-8 positions, X and O are taken):\n${boardDisplay}\n\nAVAILABLE positions: ${available.join(', ')}\n\nPick ONE number from the available positions.` 
+                    }
                 ],
             }),
         });
