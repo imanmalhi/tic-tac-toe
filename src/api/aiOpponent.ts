@@ -10,7 +10,7 @@ function formatBoard(board: Board): string {
 
 function findFallbackMove(board: Board): AIMove {
     const index = board.findIndex((cell) => cell === null);
-    return { index, explanation: 'Fallback move due to API error' };
+    return { index, explanation: 'Making a move' };
 }
 
 function extractJSON(text: string): AIMove {
@@ -21,7 +21,11 @@ function extractJSON(text: string): AIMove {
     throw new Error('No valid JSON found in response');
 }
 
-const SYSTEM_PROMPT = `You are playing tic-tac-toe as O. Respond with ONLY valid JSON, no other text: {"index": <0-8>, "explanation": "<brief reason>"}`;
+function isValidMove(board: Board, index: number): boolean {
+    return index >= 0 && index <= 8 && board[index] === null;
+}
+
+const SYSTEM_PROMPT = `You are playing tic-tac-toe as O. The board shows numbers 0-8 for empty cells. Pick an EMPTY cell (shown as a number). Respond with ONLY valid JSON: {"index": <0-8>, "explanation": "<brief reason>"}`;
 
 export async function getAIMove(board: Board): Promise<AIMove> {
     const boardDisplay = formatBoard(board);
@@ -40,7 +44,7 @@ export async function getAIMove(board: Board): Promise<AIMove> {
                 max_tokens: 100,
                 system: SYSTEM_PROMPT,
                 messages: [
-                    { role: 'user', content: `Current board:\n${boardDisplay}\n\nYour move as O:` }
+                    { role: 'user', content: `Current board:\n${boardDisplay}\n\nYour move as O (pick an empty cell shown as a number):` }
                 ],
             }),
         });
@@ -49,7 +53,12 @@ export async function getAIMove(board: Board): Promise<AIMove> {
         const content = data.content[0].text;
         const move = extractJSON(content);
 
-        return move;
+        if (isValidMove(board, move.index)) {
+            return move;
+        }
+
+        console.warn('AI returned invalid move:', move.index, 'Using fallback');
+        return findFallbackMove(board);
     } catch (error) {
         console.error('AI move failed:', error);
         return findFallbackMove(board);
